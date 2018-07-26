@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Location Code Test</string>
+    <string name="hello_world"><![CDATA[<a href="android-app://com.test.x.locationcodetest">Hello</a> World]]></string>
+    <string name="time_toast">Alarm Fired at: %1$s Location: %2$s</string>
+    <string name="work_scheuled">Location update work scheduled. Frequency: every %1$s Milliseconds</string>
+</resources>

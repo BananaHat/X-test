@@ -18,7 +18,50 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
+const val APP_PREFS = "com.test.x.locationcodetest.APP_PREFS"
+const val SCHEDULE_ON_BOOT = "com.test.x.locationcodetest.SCHEDULE_ON_BOOT"
 const val EXTRA_RESCHEDULE = "com.test.x.locationcodetest.EXTRA_RESCHEDULE"
+
+fun buildRescheduleIntent(context: Context) : Intent {
+   return Intent(context, UpdateLocationService::class.java).apply {
+        putExtra(EXTRA_RESCHEDULE, true)
+    }
+}
+
+/**
+ * This will check the intent for the EXTRA_RESCHEDULE flag and schedule or reschedule the alarm
+ */
+fun scheduleLocationCheck(context: Context, intent: Intent) {
+    if (intent.hasExtra(EXTRA_RESCHEDULE)) {
+        // to prevent endless rescheduling the EXTRA_RESCHEDULE and all other extras are
+        // stripped from the intent.
+        intent.replaceExtras(Bundle())
+        val pendingIntent : PendingIntent? = PendingIntent.getService(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT)
+        // I considered using the androidx WorkManager
+        // (https://developer.android.com/topic/libraries/architecture/workmanager)
+        // but as it was in beta I decided to stick with the old AlarmManager as it still works
+        // with all the api versions mandated by the project requirements.
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + UpdateLocationService.alarmFrequency,
+                UpdateLocationService.alarmFrequency,
+                pendingIntent)
+        Log.d(
+               "scheduleLocationCheck",
+                context.getString(R.string.work_scheuled,
+                        UpdateLocationService.alarmFrequency.toString()))
+
+        context.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(SCHEDULE_ON_BOOT, true)
+                .apply()
+    }
+}
 
 class UpdateLocationService : Service() {
 
@@ -37,8 +80,8 @@ class UpdateLocationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        scheduleLocationCheck(this, intent)
         doLocationWork()
-        scheduleLocationCheck(intent)
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -68,32 +111,5 @@ class UpdateLocationService : Service() {
             }
         }
 
-    }
-
-    /**
-     * This will check the intent for the EXTRA_RESCHEDULE flag and schedule or reschedule the alarm
-     */
-    private fun scheduleLocationCheck(intent: Intent) {
-        if (intent.hasExtra(EXTRA_RESCHEDULE)) {
-            // to prevent endless rescheduling the EXTRA_RESCHEDULE and all other extras are
-            // stripped from the intent.
-            intent.replaceExtras(Bundle())
-            val pendingIntent : PendingIntent? = PendingIntent.getService(
-                    this,
-                    0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT)
-            // I considered using the androidx WorkManager
-            // (https://developer.android.com/topic/libraries/architecture/workmanager)
-            // but as it was in beta I decided to stick with the old AlarmManager as it still works
-            // with all the api versions mandated by the project requirements.
-            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    System.currentTimeMillis() + alarmFrequency,
-                    alarmFrequency,
-                    pendingIntent)
-            Log.d(UpdateLocationService::class.java.simpleName, getString(R.string.work_scheuled, alarmFrequency.toString()))
-        }
     }
 }

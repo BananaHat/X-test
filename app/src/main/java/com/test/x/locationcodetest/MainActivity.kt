@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("MainActivity", "new Intent: " + intent.toUri(0))
         helloWorld = findViewById(R.id.hello)
         // considering i'm going to use the legacy flag anyway I might as well just use the
         // deprecated method rather than write api version logic.
@@ -42,11 +41,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onNewIntent(intent: Intent) {
-        val updateIntent = Intent(this, UpdateLocationService::class.java).apply {
-            putExtra(EXTRA_RESCHEDULE, true)
-        }
-        Log.d("MainActivity", updateIntent.toUri(0))
-        startService(updateIntent)
+        Log.d("MainActivity", "new Intent: " + intent.toUri(0))
+        startService(buildRescheduleIntent(this))
         super.onNewIntent(intent)
     }
 }
