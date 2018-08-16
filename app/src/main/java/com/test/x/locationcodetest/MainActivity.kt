@@ -10,12 +10,18 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.text.method.LinkMovementMethod
-import android.util.Log
 import android.widget.TextView
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
+
     companion object {
+        val alarmFrequency = if (BuildConfig.DEBUG) {
+            TimeUnit.MINUTES.toMillis(1)
+        } else {
+            TimeUnit.HOURS.toMillis(1)
+        }
         const val LOCATION_PERMISSION_REQUEST = 5
     }
 
@@ -41,7 +47,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onNewIntent(intent: Intent) {
-        Log.d("MainActivity", "new Intent: " + intent.toUri(0))
         sendBroadcast(buildRescheduleIntent(this))
         super.onNewIntent(intent)
     }
