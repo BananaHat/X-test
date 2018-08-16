@@ -65,7 +65,7 @@ fun scheduleLocationCheck(context: Context, intent: Intent) {
     }
 }
 
-class UpdateLocationService : Service() {
+class UpdateLocationService : BroadcastReceiver() {
 
     companion object {
         val alarmFrequency = if (BuildConfig.DEBUG) {
@@ -75,7 +75,7 @@ class UpdateLocationService : Service() {
         }
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    /*override fun onBind(intent: Intent): IBinder? {
         // This service only exists to do work and does not need to be bound to.
         return null
 
