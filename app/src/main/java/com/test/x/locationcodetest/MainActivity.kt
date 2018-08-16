@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         Log.d("MainActivity", "new Intent: " + intent.toUri(0))
-        startService(buildRescheduleIntent(this))
+        sendBroadcast(buildRescheduleIntent(this))
         super.onNewIntent(intent)
     }
 }

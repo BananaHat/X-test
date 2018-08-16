@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".UpdateLocationService"/>
+        <receiver android:name=".UpdateLocationService"/>
 
         <receiver android:name=".BootReceiverScheduler">
             <intent-filter>

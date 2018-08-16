@@ -4,10 +4,12 @@ import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v4.content.ContextCompat
@@ -83,6 +85,18 @@ class UpdateLocationService : Service() {
         scheduleLocationCheck(this, intent)
         doLocationWork()
         return super.onStartCommand(intent, flags, startId)
+    }*/
+
+    override fun onReceive(context: Context, intent: Intent) {
+        if (ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION) ==  PackageManager.PERMISSION_GRANTED) {
+            val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val msg = context.getString(R.string.time_toast,
+                    SimpleDateFormat.getTimeInstance().format(Calendar.getInstance().time),
+                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).toString())
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+        //scheduleLocationCheck(context, intent)
     }
 
     /**
@@ -92,7 +106,9 @@ class UpdateLocationService : Service() {
      * installed the app should fall back to a solution using the os api.
      */
     private fun doLocationWork() {
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+
+        /*val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ContextCompat.checkSelfPermission(
                         this,
                         Manifest.permission.ACCESS_FINE_LOCATION) ==  PackageManager.PERMISSION_GRANTED) {
@@ -109,7 +125,7 @@ class UpdateLocationService : Service() {
                     stopSelf()
                 }
             }
-        }
+        }*/
 
     }
 }
