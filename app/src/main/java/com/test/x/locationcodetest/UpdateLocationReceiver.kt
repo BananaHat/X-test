@@ -58,11 +58,12 @@ class UpdateLocationReceiver : BroadcastReceiver() {
         if (ContextCompat.checkSelfPermission(context,
                         Manifest.permission.ACCESS_FINE_LOCATION) ==  PackageManager.PERMISSION_GRANTED) {
             val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val msg = context.getString(R.string.time_toast,
-                    SimpleDateFormat.getTimeInstance().format(Calendar.getInstance().time),
-                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).toString())
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-            Log.d("UpdateLocationReceiver", msg)
+            if (locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) != null) {
+                val msg = context.getString(R.string.time_toast,
+                        SimpleDateFormat.getTimeInstance().format(Calendar.getInstance().time),
+                        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).toString())
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+            }
         }
         scheduleLocationCheck(context, intent)
     }
