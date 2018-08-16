@@ -24,13 +24,17 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".UpdateLocationService"/>
+        <receiver android:name=".UpdateLocationReceiver">
+            <intent-filter>
+                <action android:name="com.test.x.locationcodetest.action.LOCATION_UPDATE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
         <receiver android:name=".BootReceiverScheduler">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
